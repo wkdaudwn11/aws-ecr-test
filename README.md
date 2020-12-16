@@ -7,6 +7,5 @@
 5. AWS CodeDeploy
 6. AWS EC2
 7. Docker
-8. docker-compose
-9. NGINX
-10. React
+8. NGINX
+9. React
