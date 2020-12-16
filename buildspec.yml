@@ -5,13 +5,14 @@ phases:
       nodejs: 12
       docker: 19
     commands:
-      - echo "Install all of dependencies"
+      - echo "Install all of dependencies.."
+      - rm -rf /var/run/docker.pid
+      - fuser -k -n tcp 2375
+      - nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 --storage-driver=overlay&
+      - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
       - npm install
   pre_build:
     commands:
-      # - rm -rf /var/run/docker.pid
-      # - nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 --storage-driver=overlay&
-      # - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
       - $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
   build:
     commans:
