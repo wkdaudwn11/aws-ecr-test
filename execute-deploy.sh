@@ -1,0 +1,1 @@
+curl --data "aws-ecr-test execute-deploy.sh 실행됨" 'https://d-dive.slack.com/services/hooks/slackbot?token=7WOMm81rpCFOhNGNCt46ctS5&channel=%23mj-test'
