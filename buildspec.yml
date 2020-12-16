@@ -6,32 +6,36 @@ phases:
       docker: 19
     commands:
       - echo "Install all of dependencies.."
-      # - rm -rf /var/run/docker.pid
-      # - fuser -k -n tcp 2375
-      - nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 --storage-driver=overlay&
-      - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
+      # - nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 --storage-driver=overlay&
+      # - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
       - npm install
-  pre_build:
-    commands:
-      - $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
+  # pre_build:
+  #   commands:
+  #     - $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
   build:
     commans:
       - npm run build
   post_build:
     commands:
-      - AWS_ACCOUNT_ID="$(aws sts get-caller-identity --output text --query Account)"
-
       - |
         docker build . \
         -f Dockerfile \
         --build-arg ENV=dev \
-        --tag $AWS_ACCOUNT_ID.dkr.ecr.ap-northeast-2.amazonaws.com/ecr-repo-test:latest
+        --tag ecr-repo-test:latest
+      - docker images
+      # - AWS_ACCOUNT_ID="$(aws sts get-caller-identity --output text --query Account)"
 
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.ap-northeast-2.amazonaws.com/ecr-repo-test:latest
+      # - |
+      #   docker build . \
+      #   -f Dockerfile \
+      #   --build-arg ENV=dev \
+      #   --tag $AWS_ACCOUNT_ID.dkr.ecr.ap-northeast-2.amazonaws.com/ecr-repo-test:latest
 
-      - |
-        printf '[{"name":"ecr-repo-test","imageUri":"%s"}]' \
-        $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ecr-repo-test:latest > imagedefinitions.json
+      # - docker push $AWS_ACCOUNT_ID.dkr.ecr.ap-northeast-2.amazonaws.com/ecr-repo-test:latest
+
+      # - |
+      #   printf '[{"name":"ecr-repo-test","imageUri":"%s"}]' \
+      #   $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ecr-repo-test:latest > imagedefinitions.json
 
 artifacts:
   files:
