@@ -3,7 +3,6 @@ phases:
   install:
     runtime-versions:
       nodejs: 12
-      docker: 19
     commands:
       - echo "Install all of dependencies.."
       - npm install
@@ -17,6 +16,7 @@ phases:
     commands:
       - AWS_ACCOUNT_ID="$(aws sts get-caller-identity --output text --query Account)"
       - pwd
+      - ls
       - docker build . -f Dockerfile --tag $AWS_ACCOUNT_ID.dkr.ecr.ap-northeast-2.amazonaws.com/ecr-repo-test:latest
       # - docker build -t ecr-repo-test:latest .
       # - docker tag ecr-repo-test:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ecr-repo-test:latest
