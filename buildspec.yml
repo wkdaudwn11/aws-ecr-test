@@ -3,11 +3,13 @@ phases:
   install:
     runtime-versions:
       nodejs: 12
+      docker: 19
     commands:
       - echo "Install all of dependencies"
       - npm install
   pre_build:
     commands:
+      - rm -rf /var/run/docker.pid
       - nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 --storage-driver=overlay&
       - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
       - $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
@@ -23,7 +25,9 @@ phases:
         -f Dockerfile \
         --build-arg ENV=dev \
         --tag $AWS_ACCOUNT_ID.dkr.ecr.ap-northeast-2.amazonaws.com/ecr-repo-test:latest
+
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.ap-northeast-2.amazonaws.com/ecr-repo-test:latest
+
       - |
         printf '[{"name":"ecr-repo-test","imageUri":"%s"}]' \
         $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ecr-repo-test:latest > imagedefinitions.json
