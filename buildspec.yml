@@ -10,7 +10,7 @@ phases:
     commands:
       - $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
   build:
-    commans:
+    commands:
       - npm run build
   post_build:
     commands:
